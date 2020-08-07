@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
   load(&Ping);
   load(&Stat);
   load(&Off);
-  load(&Kick);
+  /* load(&Kick); */
 
   while (running) {
     cJSON *lp = get_longpoll_json();

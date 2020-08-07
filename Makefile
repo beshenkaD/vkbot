@@ -22,10 +22,10 @@ OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(SRC_EXT)=$(BUILD_PATH)/%.o)
 DEPS = $(OBJECTS:.o=.d)
 
 # flags #
-COMPILE_FLAGS = -Wall -g -pipe -O2
+COMPILE_FLAGS = -Wall -pipe -O2 -march=native
 INCLUDES = -I include/ -I /usr/local/include 
 # Space-separated pkg-config libraries used by this project
-LIBS = -lcurl -lcjson
+LIBS = -lcurl -lcjson -flto=full
 
 .PHONY: default_target
 default_target: release

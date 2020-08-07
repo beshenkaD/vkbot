@@ -34,8 +34,8 @@ void messages_send(char *msg, long peer_id) {
   cJSON *resp = cJSON_GetObjectItem(root, "error");
   cJSON *code = cJSON_GetObjectItem(resp, "error_code");
 
-  if (code->valueint == 15)
-    messages_send("Access denied.", peer_id);
+  /* if (code->valueint == 15) */
+  /*   messages_send("Access denied.", peer_id); */
 
   cJSON_Delete(root);
 }
@@ -52,11 +52,10 @@ void messages_remove_chat_user(long chat_id, long user_id) {
   cJSON *resp = cJSON_GetObjectItem(root, "error");
   cJSON *code = cJSON_GetObjectItem(resp, "error_code");
 
-  printf("%d\n", code->valueint);
-  if (code->valueint == 15)
-    messages_send("Access denied.", chat_id + 2000000000);
-  if (code->valueint == 925)
-    messages_send("Бот не является администратором.", chat_id + 2000000000);
+  /* if (code->valueint == 15) */
+  /*   messages_send("Access denied.", chat_id + 2000000000); */
+  /* if (code->valueint == 925) */
+  /*   messages_send("Бот не является администратором.", chat_id + 2000000000); */
 
   cJSON_Delete(root);
 }
