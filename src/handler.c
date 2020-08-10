@@ -1,5 +1,4 @@
 #include <handler.h>
-#include <assert.h>
 #include <utils/stringutils.h>
 
 #include <modules/std.h>
@@ -7,27 +6,53 @@
 void handler(message *msg) {
   if (!msg) return;
 
+  for (int i = 0; i < module_count; i++) {
+    for (int j = 0; j < modules[i].cmds_count; j++) {
+      if (strncmp(modules[i].cmds[j].prefix, msg->text, 1) != 0)
+        return;
+    }
+  }
+
+  char *tokens[max_tok_count];
+  int tokens_count = 0;
+
+  tokenize(msg->text, tokens, &tokens_count);
+
   for (int i = 0; i < msg->count; i++) {
     function *f = map_get(&commands, msg[i].text);
 
     if (f) {
-      (*f)(&msg[i]);
+      (*f)(&msg[i], tokens_count, tokens);
     }
   }
 
   return;
 }
 
-message *get_longpoll_events(cJSON *longpoll) {
-  assert(longpoll);
+void tokenize(char *str, char *tokens[max_tok_count], int *token_count) {
+  size_t n = 0;
 
+  for (char *p = strtok(str, " "); p; p = strtok(NULL, " ")) {
+    if (n >= max_tok_count)
+      break;
+    tokens[n++] = p;
+
+    *token_count = n;
+  }
+}
+
+message *get_longpoll_events(cJSON *longpoll) {
   cJSON *ts = cJSON_GetObjectItem(longpoll, "ts");
+
+  if (!ts) {
+    get_longpoll(); // key must be updated every hour
+    return NULL;
+  }
+
   strncpy(vk->ts, ts->valuestring, 31);
 
   cJSON *updates = cJSON_GetObjectItem(longpoll, "updates");
 
-  if (!updates) 
-    get_longpoll(); // key must be updated every hour
 
   int n = cJSON_GetArraySize(updates);
   if (n == 0) {

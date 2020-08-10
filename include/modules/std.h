@@ -5,11 +5,11 @@
 #include <module.h>
 #include <time.h>
 
-void ping(message *msg);
-void off(message *msg);
-void mem(message *msg);
+void ping(message *msg, int argc, char *argv[]);
+void off(message *msg, int argc, char *argv[]);
+void mem(message *msg, int argc, char *argv[]);
 
 /* modules */
-extern module Ping;
-extern module Stat;
-extern module Off;
+extern command Ping;
+extern command Stat;
+extern command Off;

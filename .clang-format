@@ -2,6 +2,6 @@
 BasedOnStyle: Google
 IndentWidth: 2
 AccessModifierOffset: -2
-ColumnLimit: 132
 SortIncludes: false
+ColumnLimit: 105
 ...

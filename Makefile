@@ -22,10 +22,10 @@ OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(SRC_EXT)=$(BUILD_PATH)/%.o)
 DEPS = $(OBJECTS:.o=.d)
 
 # flags #
-COMPILE_FLAGS = -Wall -pipe -O2 -march=native
+COMPILE_FLAGS = -Wall -pipe -O2 -g
 INCLUDES = -I include/ -I /usr/local/include 
 # Space-separated pkg-config libraries used by this project
-LIBS = -lcurl -lcjson -flto=full
+LIBS = -lcurl -lcjson -lsqlite3
 
 .PHONY: default_target
 default_target: release
@@ -43,8 +43,6 @@ dirs:
 
 .PHONY: clean
 clean:
-	@echo "Deleting $(BIN_NAME) symlink"
-	@$(RM) $(BIN_NAME)
 	@echo "Deleting directories"
 	@$(RM) -r $(BUILD_PATH)
 	@$(RM) -r $(BIN_PATH)

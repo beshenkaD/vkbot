@@ -19,7 +19,7 @@ void vk_destroy() {
 cJSON *call_method(const char *method, map_str_t *args) {
   map_set(args, "v", VK_API_VERSION);
   map_set(args, "access_token", token);
-  map_set(args, "group_id", id);
+  map_set(args, "group_id", botid);
 
   sds s = args_serialize(*args);
 

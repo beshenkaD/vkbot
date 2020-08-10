@@ -2,6 +2,8 @@
 #include <modules/std.h>
 #include <modules/admin.h>
 
+#include <unistd.h>
+
 bool running = true;
 
 void get_time() {
@@ -13,14 +15,16 @@ void get_time() {
 }
 
 int main(int argc, char **argv) {
+  users_init();
   get_time();
+
+  module std = {"Standart", "Стандартные функции бота.", 3, {Ping, Stat, Off}};
+  module adm = {"Admin", "Функции для администрирования бесед", 2, {Kick, Set}};
+  load_module(&std);
+  load_module(&adm);
+
   vk_init();
-
-  load(&Ping);
-  load(&Stat);
-  load(&Off);
-  /* load(&Kick); */
-
+  
   while (running) {
     cJSON *lp = get_longpoll_json();
     message *msg = get_longpoll_events(lp);
@@ -31,6 +35,7 @@ int main(int argc, char **argv) {
     free(msg);
   }
 
+  users_deinit();
   vk_destroy();
   return 0;
 }
