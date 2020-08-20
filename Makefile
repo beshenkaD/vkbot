@@ -1,70 +1,41 @@
-CC ?= clang
+TARGET   	?= bot
+SRC_DIRS 	?= src
+INC_DIRS  ?= include
+BIN_DIR   ?= bin
+BUILD_DIR ?= build
 
-# path #
-SRC_PATH = src
-BUILD_PATH = build
-BIN_PATH = bin
+CFLAGS  ?= $(INC_FLAGS) -MMD -MP -O2 -march=native
+LDFLAGS ?= -flto=thin
+LDLIBS  ?= -lcurl -lsqlite3 -lcjson
 
-# executable # 
-BIN_NAME = bot
+SRCS := $(shell find $(SRC_DIRS) -name *.c)
+OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
+DEPS := $(OBJS:.o=.d)
 
-# extensions #
-SRC_EXT = c
+INC_FLAGS  := $(addprefix -I,$(INC_DIRS))
+EXECUTABLE := $(BIN_DIR)/$(TARGET)
 
-# code lists #
-# Find all source files in the source directory, sorted by
-# most recently modified
-SOURCES = $(shell find $(SRC_PATH) -name '*.$(SRC_EXT)' | sort -k 1nr | cut -f2-)
-# Set the object file names, with the source directory stripped
-# from the path, and the build path prepended in its place
-OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(SRC_EXT)=$(BUILD_PATH)/%.o)
-# Set the dependency files that will be used to add header dependencies
-DEPS = $(OBJECTS:.o=.d)
 
-# flags #
-COMPILE_FLAGS = -Wall -pipe -O2 -g
-INCLUDES = -I include/ -I /usr/local/include 
-# Space-separated pkg-config libraries used by this project
-LIBS = -lcurl -lcjson -lsqlite3
+all: $(SRCS) $(EXECUTABLE)
 
-.PHONY: default_target
-default_target: release
+$(BIN_DIR)/$(TARGET): $(OBJS)
+	$(MKDIR_P) $(BIN_DIR)
+	$(CC) $(OBJS) -o $@ $(LDFLAGS) $(LDLIBS)
 
-.PHONY: release
-release: export CFLAGS := $(CFLAGS) $(COMPILE_FLAGS)
-release: dirs
-	@$(MAKE) all
+$(BUILD_DIR)/%.c.o: %.c
+	$(MKDIR_P) $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-.PHONY: dirs
-dirs:
-	@echo "Creating directories"
-	@mkdir -p $(dir $(OBJECTS))
-	@mkdir -p $(BIN_PATH)
+debug: CFLAGS  := $(INC_FLAGS) -Wextra -Wall -MMD -MP -O2 -g -fno-omit-frame-pointer
+debug: LDFLAGS := 
+debug: all
+
+release: all
 
 .PHONY: clean
 clean:
-	@echo "Deleting directories"
-	@$(RM) -r $(BUILD_PATH)
-	@$(RM) -r $(BIN_PATH)
+	$(RM) -r $(BUILD_DIR) $(BIN_DIR)
 
-# checks the executable and symlinks to the output
-.PHONY: all
-all: $(BIN_PATH)/$(BIN_NAME)
-# @echo "Making symlink: $(BIN_NAME) -> $<"
-# @$(RM) $(BIN_NAME)
-# @ln -s $(BIN_PATH)/$(BIN_NAME) $(BIN_NAME)
-
-# Creation of the executable
-$(BIN_PATH)/$(BIN_NAME): $(OBJECTS)
-	@echo "Linking: $@"
-	$(CC) $(OBJECTS) -o $@ ${LIBS}
-
-# Add dependency files, if they exist
 -include $(DEPS)
 
-# Source file rules
-# After the first compilation they will be joined with the rules from the
-# dependency files to provide header dependencies
-$(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(SRC_EXT)
-	@echo "Compiling: $< -> $@"
-	$(CC) $(CFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@
+MKDIR_P ?= mkdir -p

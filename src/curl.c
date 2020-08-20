@@ -2,8 +2,9 @@
 
 void *curl_init() { return curl_easy_init(); }
 
-static size_t write_callback(void *contents, size_t size, size_t nmemb, void *userp) {
-  size_t realsize = size * nmemb;
+static size_t write_callback(void *contents, size_t size, size_t nmemb,
+                             void *userp) {
+  size_t realsize          = size * nmemb;
   struct MemoryStruct *mem = (struct MemoryStruct *)userp;
 
   char *ptr = realloc(mem->memory, mem->size + realsize + 1);
@@ -24,11 +25,12 @@ static size_t write_callback(void *contents, size_t size, size_t nmemb, void *us
 // make post request Function returns allocated cstring
 char *curl_post(char *url, char *post) {
   CURLcode res;
+  curl_easy_reset(curl_handle);
 
   struct MemoryStruct chunk;
 
   chunk.memory = malloc(1);
-  chunk.size = 0;
+  chunk.size   = 0;
 
   if (curl_handle) {
     curl_easy_setopt(curl_handle, CURLOPT_URL, url);
@@ -37,7 +39,11 @@ char *curl_post(char *url, char *post) {
     curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);
 
     res = curl_easy_perform(curl_handle);
-    if (res != CURLE_OK) fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+    if (res != CURLE_OK) {
+      fprintf(stderr, "curl_easy_perform() failed: %s\n",
+              curl_easy_strerror(res));
+      exit(EXIT_FAILURE);
+    }
 
     return chunk.memory;
   }

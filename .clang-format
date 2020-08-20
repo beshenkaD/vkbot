@@ -1,7 +1,6 @@
-# Use defaults from the Google style with the following exceptions:
-BasedOnStyle: Google
-IndentWidth: 2
-AccessModifierOffset: -2
-SortIncludes: false
-ColumnLimit: 105
-...
+BasedOnStyle: LLVM
+AlignConsecutiveMacros: true
+AlignConsecutiveAssignments: true
+AlignOperands: true
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: true
