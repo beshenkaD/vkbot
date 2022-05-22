@@ -4,8 +4,8 @@ INC_DIRS  ?= include
 BIN_DIR   ?= bin
 BUILD_DIR ?= build
 
-CFLAGS  ?= $(INC_FLAGS) -MMD -MP -O2 -march=native
-LDFLAGS ?= -flto=thin
+CFLAGS  ?= $(INC_FLAGS) -MMD -MP -Ofast -march=native -flto
+LDFLAGS ?= -flto
 LDLIBS  ?= -lcurl -lsqlite3 -lcjson
 
 SRCS := $(shell find $(SRC_DIRS) -name *.c)

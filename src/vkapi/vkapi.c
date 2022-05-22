@@ -43,6 +43,12 @@ void update_longpoll() {
   map_deinit(&n);
 
   cJSON *response = cJSON_GetObjectItem(root, "response");
+
+  if (!response) {
+    fprintf(stderr, "%s\n", cJSON_Print(root));
+    exit(EXIT_FAILURE);
+  }
+
   cJSON *server   = cJSON_GetObjectItem(response, "server");
   cJSON *key      = cJSON_GetObjectItem(response, "key");
   cJSON *ts       = cJSON_GetObjectItem(response, "ts");
